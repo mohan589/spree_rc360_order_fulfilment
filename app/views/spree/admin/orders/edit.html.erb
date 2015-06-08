@@ -1,0 +1,78 @@
+<div style="float: right;">
+<%= render partial: 'spree/admin/shared/order_tabs', locals: { current: 'Shipments' } %>
+</div>
+
+<div class="panel panel-default" data-hook="customer_guest">
+	<div class="panel-heading">
+		<h1 class="panel-title">
+		<%= Spree.t(:account) %>
+		</h1>
+	</div>
+	<%= form_for @order, url: spree.admin_order_customer_url(@order) do |f| %>
+		<div class="panel-body">
+			<div data-hook="customer_fields">
+				<div class="col-md-8">
+					<div class="form-group">
+					<%= f.label :email, Spree.t(:email) %>
+						<% if can? :edit, @order.user %>
+							<%= f.email_field :email, class: 'form-control' %>
+						<% else %>
+							<p><%= @order.user.email %></p>
+					<% end %>
+					</div>
+				</div> <!-- email over -->
+				<div class="col-md-4">
+					<div class="form-group">
+						<strong><%= label_tag nil, Spree.t(:guest_checkout) %></strong>
+						<% if @order.completed? %>
+							<div>
+								<span class="badge">
+									<%= @order.user.nil? ? Spree.t(:say_yes) : Spree.t(:say_no) %>
+								</span>
+							</div>
+						<% else %>
+							<% guest = @order.user.nil? %>
+							<div class="radio no-margint">
+								<%= label_tag :guest_checkout_true do %>
+									<%= radio_button_tag :guest_checkout, true, guest %>
+									<%= Spree.t(:say_yes) %>
+								<% end %>
+							</div>
+							<div class="radio">
+								<%= label_tag :guest_checkout_false do %>
+									<%= radio_button_tag :guest_checkout, false, !guest, disabled: @order.cart? %>
+									<%= Spree.t(:say_no) %>
+								<% end %>
+							</div>
+							<%= hidden_field_tag :user_id, @order.user_id %>
+						<% end %>
+					</div>
+				</div>
+			</div>
+		</div>
+	<% end %>
+</div>
+<%= render :partial => "spree/admin/orders/line_items", :locals => { :order => @order }%>
+<%= render :partial => "spree/admin/orders/adjustments", :locals => {
+        :adjustments => @order.line_item_adjustments,
+        :order => @order,
+        :title => Spree.t(:line_item_adjustments)
+   } %>
+<br>
+<br>
+<% process_shipping_url = spree.edit_admin_order_url(@order).sub(/edit/,'process_shipping') %>
+
+
+<%= link_to "Process Shipping", spree.edit_admin_order_url(@order).sub(/edit/,'process_shipping'), :class => "btn btn-primary btn-lg" %>
+
+
+
+
+
+
+
+
+
+
+
+
